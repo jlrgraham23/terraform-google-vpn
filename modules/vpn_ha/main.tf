@@ -151,14 +151,15 @@ resource "google_compute_router_peer" "bgp_peer" {
 }
 
 resource "google_compute_router_interface" "router_interface" {
-  provider   = google-beta
-  for_each   = var.tunnels
-  project    = var.project_id
-  region     = var.region
-  name       = each.value.bgp_session_name != null ? each.value.bgp_session_name : "${var.name}-${each.key}"
-  router     = local.router
-  ip_range   = each.value.bgp_session_range == "" ? null : each.value.bgp_session_range
-  vpn_tunnel = google_compute_vpn_tunnel.tunnels[each.key].name
+  provider           = google-beta
+  for_each           = var.tunnels
+  project            = var.project_id
+  region             = var.region
+  name               = each.value.bgp_session_name != null ? each.value.bgp_session_name : "${var.name}-${each.key}"
+  router             = local.router
+  ip_range           = each.value.bgp_session_range == "" ? null : each.value.bgp_session_range
+  private_ip_address = each.value.bgp_interface_ip_address == "" ? null : each.value.bgp_interface_ip_address
+  vpn_tunnel         = google_compute_vpn_tunnel.tunnels[each.key].name
 }
 
 resource "google_compute_vpn_tunnel" "tunnels" {
